@@ -1,7 +1,7 @@
 package com.lavr.training.gen.ai.controller;
 
+import com.lavr.training.gen.ai.dto.AiModelResponse;
 import com.lavr.training.gen.ai.service.PromptService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +16,7 @@ public class PromptController {
   private final PromptService promptService;
 
   @GetMapping
-  public List<String> getAnswerFromAi(@RequestParam(name = "prompt") String prompt) {
+  public AiModelResponse getAnswerFromAi(@RequestParam(name = "prompt") String prompt) {
     return promptService.getAnswerFromAi(prompt);
   }
 }

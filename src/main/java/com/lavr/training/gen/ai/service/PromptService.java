@@ -1,7 +1,14 @@
 package com.lavr.training.gen.ai.service;
 
-import java.util.List;
+import com.lavr.training.gen.ai.dto.AiModelResponse;
 
 public interface PromptService {
-  List<String> getAnswerFromAi(String prompt);
+
+  /**
+   * Get response from AI model based on the prompt
+   *
+   * @param prompt prompt from user
+   * @return {@link AiModelResponse} with model response
+   */
+  AiModelResponse getAnswerFromAi(String prompt);
 }
