@@ -8,5 +8,5 @@ public class AiModelRequest {
   private String sessionId = UUID.randomUUID().toString();
   private String prompt;
   private double temperature = 0.5;
-  private String modelId;
+  private String model;
 }
