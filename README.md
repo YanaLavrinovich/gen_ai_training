@@ -20,7 +20,7 @@ Use values:
 - close to 1 to get more creative answers
 
 ```
-POST /gen/ai
+POST /openai
 {
   "sessionId": "6e1e6888-8543-4d75-bdcb-a11bd2fb3690",
   "prompt": "I want to find top-10 books about world history",
@@ -30,5 +30,11 @@ POST /gen/ai
 
 ### Delete chat history for session id
 ```
-DELETE /gen/ai/history?sessionId=6e1e6888-8543-4d75-bdcb-a11bd2fb3690
+DELETE /openai/history?sessionId=6e1e6888-8543-4d75-bdcb-a11bd2fb3690
+```
+
+### Get deployments
+Get deployment names and their ids
+```
+GET /openai/deployments
 ```

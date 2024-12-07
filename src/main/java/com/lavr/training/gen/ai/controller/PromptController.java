@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("gen/ai")
+@RequestMapping("openai")
 @RequiredArgsConstructor
 public class PromptController {
 
@@ -29,9 +29,7 @@ public class PromptController {
       return ResponseEntity.badRequest().body(errors);
     }
 
-    return ResponseEntity.ok(
-        promptService.getAnswerFromAi(
-            request.getSessionId(), request.getPrompt(), request.getTemperature()));
+    return ResponseEntity.ok(promptService.getAnswerFromAi(request));
   }
 
   @DeleteMapping("/history")
