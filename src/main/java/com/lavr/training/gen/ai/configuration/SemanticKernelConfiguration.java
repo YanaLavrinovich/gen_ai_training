@@ -1,10 +1,11 @@
 package com.lavr.training.gen.ai.configuration;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
-import com.lavr.training.gen.ai.plugin.SimplePlugin;
+import com.lavr.training.gen.ai.plugin.AgeCalculatorPlugin;
+import com.lavr.training.gen.ai.plugin.LightSwitcherPlugin;
+import com.lavr.training.gen.ai.plugin.WeatherForecastPlugin;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.aiservices.openai.chatcompletion.OpenAIChatCompletion;
-import com.microsoft.semantickernel.plugin.KernelPlugin;
 import com.microsoft.semantickernel.plugin.KernelPluginFactory;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,15 +35,17 @@ public class SemanticKernelConfiguration {
   }
 
   @Bean
-  public KernelPlugin kernelPlugin() {
-    return KernelPluginFactory.createFromObject(new SimplePlugin(), "SimplePlugin");
-  }
-
-  @Bean
   @Scope(value = "prototype")
   public Kernel kernel(final ChatCompletionService chatCompletionService) {
     return Kernel.builder()
         .withAIService(ChatCompletionService.class, chatCompletionService)
+        .withPlugin(
+            KernelPluginFactory.createFromObject(new AgeCalculatorPlugin(), "AgeCalculatorPlugin"))
+        .withPlugin(
+            KernelPluginFactory.createFromObject(
+                new WeatherForecastPlugin(), "WeatherForecastPlugin"))
+        .withPlugin(
+            KernelPluginFactory.createFromObject(new LightSwitcherPlugin(), "LightSwitcherPlugin"))
         .build();
   }
 }

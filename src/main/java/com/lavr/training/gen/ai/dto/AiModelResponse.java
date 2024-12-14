@@ -8,4 +8,5 @@ import lombok.Data;
 public class AiModelResponse {
 
   private String response;
+  private String sessionId;
 }
