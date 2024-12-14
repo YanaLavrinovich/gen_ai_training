@@ -6,10 +6,13 @@ import com.lavr.training.gen.ai.dto.AiModelResponse;
 import com.lavr.training.gen.ai.history.ChatHistoryStorage;
 import com.microsoft.semantickernel.Kernel;
 import com.microsoft.semantickernel.orchestration.InvocationContext;
+import com.microsoft.semantickernel.orchestration.InvocationReturnMode;
 import com.microsoft.semantickernel.orchestration.PromptExecutionSettings;
-import com.microsoft.semantickernel.services.chatcompletion.AuthorRole;
+import com.microsoft.semantickernel.orchestration.ToolCallBehavior;
 import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionService;
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
+import com.microsoft.semantickernel.services.chatcompletion.ChatMessageContent;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -27,7 +30,6 @@ public abstract class PromptServiceImpl implements PromptService {
     ChatHistory chatHistory = chatHistoryStorage.get(request.getSessionId());
     chatHistory.addUserMessage(request.getPrompt());
 
-    StringBuilder answer = new StringBuilder();
     ChatCompletionService chatCompletionService =
         getChatCompletionService(request.getModel(), openAIAsyncClient);
     var results =
@@ -43,16 +45,12 @@ public abstract class PromptServiceImpl implements PromptService {
       return AiModelResponse.builder().build();
     }
 
-    results.stream()
-        .filter(result -> result.getAuthorRole() == AuthorRole.ASSISTANT)
-        .forEach(
-            result -> {
-              log.info(result.getContent());
-              chatHistory.addAssistantMessage(result.getContent());
-              answer.append(result.getContent());
-            });
+    String answer =
+        results.stream().map(ChatMessageContent::getContent).collect(Collectors.joining());
+    log.info(answer);
+    chatHistory.addAssistantMessage(answer);
 
-    return AiModelResponse.builder().response(answer.toString()).build();
+    return AiModelResponse.builder().response(answer).sessionId(request.getSessionId()).build();
   }
 
   @Override
@@ -75,6 +73,8 @@ public abstract class PromptServiceImpl implements PromptService {
     return new InvocationContext.Builder()
         .withPromptExecutionSettings(
             PromptExecutionSettings.builder().withTemperature(temperature).build())
+        .withToolCallBehavior(ToolCallBehavior.allowAllKernelFunctions(true))
+        .withReturnMode(InvocationReturnMode.LAST_MESSAGE_ONLY)
         .build();
   }
 }
