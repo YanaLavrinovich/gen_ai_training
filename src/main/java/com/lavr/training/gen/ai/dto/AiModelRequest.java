@@ -7,5 +7,6 @@ import lombok.Data;
 public class AiModelRequest {
   private String sessionId = UUID.randomUUID().toString();
   private String prompt;
-  private double temperature = 1;
+  private double temperature = 0.5;
+  private String model;
 }

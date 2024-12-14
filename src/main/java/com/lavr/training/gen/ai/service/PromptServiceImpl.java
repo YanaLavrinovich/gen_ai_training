@@ -1,5 +1,7 @@
 package com.lavr.training.gen.ai.service;
 
+import com.azure.ai.openai.OpenAIAsyncClient;
+import com.lavr.training.gen.ai.dto.AiModelRequest;
 import com.lavr.training.gen.ai.dto.AiModelResponse;
 import com.lavr.training.gen.ai.history.ChatHistoryStorage;
 import com.microsoft.semantickernel.Kernel;
@@ -10,25 +12,30 @@ import com.microsoft.semantickernel.services.chatcompletion.ChatCompletionServic
 import com.microsoft.semantickernel.services.chatcompletion.ChatHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PromptServiceImpl implements PromptService {
+public abstract class PromptServiceImpl implements PromptService {
 
-  private final ChatCompletionService chatCompletionService;
-  private final Kernel kernel;
+  private final OpenAIAsyncClient openAIAsyncClient;
   private final ChatHistoryStorage chatHistoryStorage;
 
-  public AiModelResponse getAnswerFromAi(String sessionId, String prompt, double temperature) {
-    ChatHistory chatHistory = chatHistoryStorage.get(sessionId);
-    chatHistory.addUserMessage(prompt);
+  public AiModelResponse getAnswerFromAi(AiModelRequest request) {
+    ChatHistory chatHistory = chatHistoryStorage.get(request.getSessionId());
+    chatHistory.addUserMessage(request.getPrompt());
 
     StringBuilder answer = new StringBuilder();
+    ChatCompletionService chatCompletionService =
+        getChatCompletionService(request.getModel(), openAIAsyncClient);
     var results =
         chatCompletionService
-            .getChatMessageContentsAsync(chatHistory, kernel, buildInvocationContext(temperature))
+            .getChatMessageContentsAsync(
+                chatHistory,
+                getKernel(chatCompletionService),
+                buildInvocationContext(request.getTemperature()))
             .block();
 
     if (results == null || results.isEmpty()) {
@@ -53,13 +60,21 @@ public class PromptServiceImpl implements PromptService {
     chatHistoryStorage.remove(sessionId);
   }
 
+  @Lookup("chatCompletionService")
+  protected ChatCompletionService getChatCompletionService(
+      String model, OpenAIAsyncClient openAIAsyncClient) {
+    return null;
+  }
+
+  @Lookup("kernel")
+  protected Kernel getKernel(ChatCompletionService chatCompletionService) {
+    return null;
+  }
+
   private InvocationContext buildInvocationContext(double temperature) {
     return new InvocationContext.Builder()
         .withPromptExecutionSettings(
-            PromptExecutionSettings.builder()
-                .withTemperature(temperature)
-                .withMaxTokens(100)
-                .build())
+            PromptExecutionSettings.builder().withTemperature(temperature).build())
         .build();
   }
 }
