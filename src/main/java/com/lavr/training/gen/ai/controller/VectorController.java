@@ -7,7 +7,6 @@ import com.lavr.training.gen.ai.service.VectorService;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import io.qdrant.client.grpc.Points;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("openai")
+@RequestMapping("embeddings")
 @RequiredArgsConstructor
 @Slf4j
 public class VectorController {
 
   private final VectorService vectorService;
 
-  @PostMapping(path = "/embeddings/build")
+  @PostMapping(path = "/build")
   public ResponseEntity<List<EmbeddingItem>> getEmbedding(
       @RequestBody EmbeddingModelRequest request) {
     try {
@@ -34,7 +33,7 @@ public class VectorController {
     }
   }
 
-  @PostMapping(path = "/embeddings/save")
+  @PostMapping(path = "/save")
   public ResponseEntity<?> processAndSaveText(@RequestBody EmbeddingModelRequest request) {
     try {
       vectorService.saveEmbedding(request.getText());
@@ -45,7 +44,7 @@ public class VectorController {
     }
   }
 
-  @PostMapping(path = "/embeddings/search")
+  @PostMapping(path = "/search")
   public ResponseEntity<List<EmbeddingModelResponse>> searchClosestEmbedding(
       @RequestBody EmbeddingModelRequest request) {
     try {

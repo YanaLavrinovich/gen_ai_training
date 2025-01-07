@@ -74,7 +74,10 @@ public class VectorServiceImpl implements VectorService {
     return result.stream()
         .map(
             emb ->
-                EmbeddingModelResponse.builder().id(emb.getId().getUuid()).pointScore(emb.getScore()).build())
+                EmbeddingModelResponse.builder()
+                    .id(emb.getId().getUuid())
+                    .pointScore(emb.getScore())
+                    .build())
         .toList();
   }
 
@@ -107,7 +110,7 @@ public class VectorServiceImpl implements VectorService {
                       .setSize(1536)
                       .build())
               .get();
-      log.info("Collection was created: [{}]", result.getResult());
+      log.info("Collection was created: {}", result.getResult());
     }
   }
 
