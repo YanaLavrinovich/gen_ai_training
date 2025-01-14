@@ -1,6 +1,7 @@
 package com.lavr.training.gen.ai.configuration;
 
 import com.azure.ai.openai.OpenAIAsyncClient;
+import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
 import com.azure.core.credential.AzureKeyCredential;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,16 @@ public class OpenAIConfiguration {
         .credential(new AzureKeyCredential(clientKey))
         .endpoint(clientEndpoint)
         .buildAsyncClient();
+  }
+
+  @Bean
+  public OpenAIClient openAIClient(
+      @Value("${client-openai-key}") String clientKey,
+      @Value("${client-openai-endpoint}") String clientEndpoint) {
+    return new OpenAIClientBuilder()
+        .credential(new AzureKeyCredential(clientKey))
+        .endpoint(clientEndpoint)
+        .buildClient();
   }
 
   @Bean
