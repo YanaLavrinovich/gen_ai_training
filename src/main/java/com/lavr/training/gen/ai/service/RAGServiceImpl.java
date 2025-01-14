@@ -23,11 +23,9 @@ public class RAGServiceImpl implements RAGService {
 
   @Override
   public String ask(final String question) {
-    log.debug("======================================================");
-    log.debug("Question: " + question);
+    log.info("Question: {}", question);
     String answer = chain.execute(question);
-    log.debug("Answer: " + answer);
-    log.debug("======================================================");
+    log.info("Answer: {}", answer);
     return answer;
   }
 
